@@ -1,0 +1,30 @@
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import bodyParser from "body-parser";
+import dotenv from "dotenv";
+import getMorganMiddleware from "./config/morganConfig";
+
+/* CONFIGURATIONS */
+dotenv.config();
+const app = express();
+app.use(express.json());
+app.use(
+	helmet({
+		crossOriginResourcePolicy: { policy: "cross-origin" },
+	}),
+);
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cors());
+app.use(getMorganMiddleware());
+
+/* ROUTES */
+app.get("/", (req, res) => {
+	res.send("This is Home route");
+});
+
+/* SERVER */
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+	console.log(`Server is running on port ${PORT}`);
+});
