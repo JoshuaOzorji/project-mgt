@@ -4,6 +4,8 @@ import helmet from "helmet";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import getMorganMiddleware from "./config/morganConfig";
+import userRoutes from "./routes/userRoutes";
+import teamRoutes from "./routes/teamRoutes";
 
 /* CONFIGURATIONS */
 dotenv.config();
@@ -22,6 +24,9 @@ app.use(getMorganMiddleware());
 app.get("/", (req, res) => {
 	res.send("This is Home route");
 });
+
+app.use("/users", userRoutes);
+app.use("/teams", teamRoutes);
 
 /* SERVER */
 const PORT = process.env.PORT || 8000;

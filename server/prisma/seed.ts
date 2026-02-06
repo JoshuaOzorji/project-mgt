@@ -1,7 +1,6 @@
-import { PrismaClient } from "../src/generated/prisma";
 import fs from "fs";
 import path from "path";
-const prisma = new PrismaClient();
+import { prisma } from "../src/lib/prisma";
 
 function getModelName(fileName: string): string {
 	return path.basename(fileName, path.extname(fileName));
@@ -44,13 +43,13 @@ async function main() {
 
 	const orderedFileNames = [
 		"team.json",
+		"user.json",
 		"project.json",
 		"projectTeam.json",
-		"user.json",
 		"task.json",
+		"taskAssignment.json",
 		"attachment.json",
 		"comment.json",
-		"taskAssignment.json",
 	];
 
 	await deleteAllData(orderedFileNames);
