@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import getMorganMiddleware from "./config/morganConfig";
 import userRoutes from "./routes/userRoutes";
 import teamRoutes from "./routes/teamRoutes";
+import projectRoutes from "./routes/projectRoutes";
 
 /* CONFIGURATIONS */
 dotenv.config();
@@ -27,6 +28,7 @@ app.get("/", (req, res) => {
 
 app.use("/users", userRoutes);
 app.use("/teams", teamRoutes);
+app.use("/projects", projectRoutes);
 
 /* SERVER */
 const PORT = process.env.PORT || 8000;

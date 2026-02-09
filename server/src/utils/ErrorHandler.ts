@@ -95,13 +95,64 @@ const handlePrismaError = (res: Response, error: any) => {
 		message: "Database error occurred",
 	};
 
-	return res.status(errorInfo.status).json({
+	let enhancedMessage = errorInfo.message;
+
+	// For unique constraint violations (P2002), specify which field
+	if (error.code === "P2002" && error.meta?.target) {
+		const fields = Array.isArray(error.meta.target)
+			? error.meta.target.join(", ")
+			: error.meta.target;
+		const modelName = error.meta.modelName || "record";
+		enhancedMessage = `${modelName} with this ${fields} already exists`;
+	}
+
+	// For foreign key failures (P2003), specify the field
+	if (error.code === "P2003" && error.meta?.field_name) {
+		enhancedMessage = `Invalid reference: ${error.meta.field_name}`;
+	}
+
+	// For record not found (P2025), add context
+	if (error.code === "P2025" && error.meta?.cause) {
+		enhancedMessage = `Record not found: ${error.meta.cause}`;
+	}
+
+	// Build response object
+	const response: any = {
 		success: false,
-		message: errorInfo.message,
+		message: enhancedMessage,
 		statusCode: errorInfo.status,
-		...(process.env.NODE_ENV === "development" && {
+	};
+
+	// Add detailed debugging info in development
+	if (process.env.NODE_ENV === "development") {
+		response.debug = {
 			prismaCode: error.code,
-			details: error.meta,
-		}),
+			meta: error.meta,
+			originalMessage: error.message,
+			clientVersion: error.clientVersion,
+		};
+
+		// Special debugging for P2002 (unique constraint)
+		if (error.code === "P2002") {
+			response.debug.hint =
+				"Check if you're sending duplicate values or if your database sequence is out of sync";
+			response.debug.affectedFields = error.meta?.target;
+		}
+
+		// Special debugging for P2003 (foreign key)
+		if (error.code === "P2003") {
+			response.debug.hint =
+				"Ensure the referenced record exists in the related table";
+			response.debug.affectedField = error.meta?.field_name;
+		}
+	}
+
+	// Log the error for server-side debugging
+	console.error("Prisma Error:", {
+		code: error.code,
+		message: error.message,
+		meta: error.meta,
 	});
+
+	return res.status(errorInfo.status).json(response);
 };
