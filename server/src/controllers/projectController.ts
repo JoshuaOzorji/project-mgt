@@ -33,21 +33,11 @@ export const createProject = async (
 			},
 		});
 
-		res.status(StatusCodes.OK).json({
+		res.status(StatusCodes.CREATED).json({
 			success: true,
 			data: newProject,
 		});
 	} catch (error: any) {
-		console.log("==================");
-		console.log("Full error object:", error);
-		console.log("Error code:", error.code);
-		console.log("Error meta:", error.meta);
-		console.log("Error name:", error.name);
-		console.log("==================");
-
-		res.status(500).json({
-			message: `Error creating a project: ${error.message}`,
-			rawError: error, // ← Add this temporarily
-		});
+		handleError(res, error);
 	}
 };

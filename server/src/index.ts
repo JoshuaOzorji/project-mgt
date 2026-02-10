@@ -7,6 +7,7 @@ import getMorganMiddleware from "./config/morganConfig";
 import userRoutes from "./routes/userRoutes";
 import teamRoutes from "./routes/teamRoutes";
 import projectRoutes from "./routes/projectRoutes";
+import taskRoutes from "./routes/taskRoutes";
 
 /* CONFIGURATIONS */
 dotenv.config();
@@ -27,6 +28,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/users", userRoutes);
+app.use("/tasks", taskRoutes);
 app.use("/teams", teamRoutes);
 app.use("/projects", projectRoutes);
 

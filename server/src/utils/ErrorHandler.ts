@@ -19,6 +19,11 @@ export const handleError = (
 		});
 	}
 
+	// Handle Prisma Validation Errors (missing required fields, type errors, etc.)
+	if ((error as any)?.name === "PrismaClientValidationError") {
+		return handlePrismaValidationError(res, error as any);
+	}
+
 	// If it's a Prisma error (check for code property)
 	if ((error as any)?.code && typeof (error as any).code === "string") {
 		return handlePrismaError(res, error as any);
@@ -38,6 +43,60 @@ export const handleError = (
 			stack: error instanceof Error ? error.stack : undefined,
 		}),
 	});
+};
+
+// Handle Prisma Validation Errors
+const handlePrismaValidationError = (res: Response, error: any) => {
+	// Extract the meaningful part of the error message
+	let cleanMessage = "Invalid data provided";
+
+	if (error.message) {
+		// Try to extract the specific validation issue
+		// e.g., "Argument `name` is missing."
+		const match = error.message.match(
+			/Argument `(\w+)` is missing\./,
+		);
+		if (match) {
+			cleanMessage = `Required field '${match[1]}' is missing`;
+		} else if (error.message.includes("Invalid value")) {
+			const fieldMatch = error.message.match(
+				/Invalid value for argument `(\w+)`/,
+			);
+			if (fieldMatch) {
+				cleanMessage = `Invalid value for field '${fieldMatch[1]}'`;
+			} else {
+				cleanMessage =
+					"Invalid value provided for one or more fields";
+			}
+		} else if (error.message.includes("Unknown argument")) {
+			const unknownMatch = error.message.match(
+				/Unknown argument `(\w+)`/,
+			);
+			if (unknownMatch) {
+				cleanMessage = `Unknown field '${unknownMatch[1]}' provided`;
+			}
+		}
+	}
+
+	const response: any = {
+		success: false,
+		message: cleanMessage,
+		statusCode: StatusCodes.BAD_REQUEST,
+	};
+
+	// In development, include the full validation error
+	if (process.env.NODE_ENV === "development") {
+		response.debug = {
+			type: "PrismaClientValidationError",
+			originalMessage: error.message,
+			hint: "Check that all required fields are provided and have valid types",
+		};
+	}
+
+	// Log for debugging
+	console.error("Prisma Validation Error:", error.message);
+
+	return res.status(StatusCodes.BAD_REQUEST).json(response);
 };
 
 // Handle common Prisma errors
