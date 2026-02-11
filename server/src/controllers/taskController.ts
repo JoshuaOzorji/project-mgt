@@ -98,3 +98,54 @@ export const createTask = async (
 		handleError(res, error);
 	}
 };
+
+export const updateTaskStatus = async (
+	req: Request,
+	res: Response,
+): Promise<void> => {
+	const { taskId } = req.params;
+	const { status } = req.body;
+
+	try {
+		const updatedTask = await prisma.task.update({
+			where: { id: Number(taskId) },
+			data: {
+				status,
+			},
+		});
+		res.status(StatusCodes.OK).json({
+			success: true,
+			data: updatedTask,
+		});
+	} catch (error) {
+		handleError(res, error);
+	}
+};
+
+export const getUserTasks = async (
+	req: Request,
+	res: Response,
+): Promise<void> => {
+	const { userId } = req.params;
+
+	try {
+		const tasks = await prisma.task.findMany({
+			where: {
+				OR: [
+					{ authorUserId: Number(userId) },
+					{ assignedUserId: Number(userId) },
+				],
+			},
+			include: {
+				author: true,
+				assignee: true,
+			},
+		});
+		res.status(StatusCodes.OK).json({
+			success: true,
+			data: tasks,
+		});
+	} catch (error) {
+		handleError(res, error);
+	}
+};
