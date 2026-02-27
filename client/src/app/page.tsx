@@ -1,8 +1,11 @@
-"use client";
-import { useGetProjectsQuery } from "../state/api";
+import HomePage from "./home/page";
 
 const page = () => {
-	return <div>Home Page</div>;
+	return (
+		<main>
+			<HomePage />
+		</main>
+	);
 };
 
 export default page;
