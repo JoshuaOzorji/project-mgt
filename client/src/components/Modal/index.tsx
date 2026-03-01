@@ -2,11 +2,11 @@ import React from "react";
 
 type Props = {
 	name: string;
-	buttonComponent?: React.ReactNode;
+	buttonComponent: React.ReactNode;
 	isSmallText?: boolean;
 };
 
-const Header = ({ name, buttonComponent, isSmallText = false }: Props) => {
+const Header = ({ name, buttonComponent, isSmallText }: Props) => {
 	return (
 		<div className='mb-5 flex w-full items-center justify-between'>
 			<h1

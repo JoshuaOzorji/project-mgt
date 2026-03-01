@@ -12,6 +12,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/material": "^7.3.7",
+    "@mui/x-data-grid": "^8.27.3",
     "@reduxjs/toolkit": "^2.11.2",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.563.0",
@@ -19,6 +20,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-redux": "^9.2.0",
+    "recharts": "^3.7.0",
     "redux-persist": "^6.0.0"
   },
   "devDependencies": {
