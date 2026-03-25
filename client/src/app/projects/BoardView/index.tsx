@@ -14,6 +14,7 @@ import {
 } from "react-dnd";
 import { format } from "date-fns";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { CiUser } from "react-icons/ci";
 
 type Props = {
 	id: string;
@@ -266,42 +267,85 @@ const Task = ({ task }: TaskProps) => {
 				{/* Users */}
 				<div className='mt-3 flex items-center justify-between'>
 					<div className='flex -space-x-1.5 overflow-hidden'>
-						{task.assignee && (
-							<Image
-								key={
-									task
-										.assignee
-										.userId
-								}
-								src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${task.assignee.profilePictureUrl!}`}
-								alt={
-									task
-										.assignee
-										.username
-								}
-								width={30}
-								height={30}
-								className='h-8 w-8 rounded-full border-2 border-white object-cover dark:border-dark-secondary'
-							/>
-						)}
-						{task.author && (
-							<Image
-								key={
-									task
-										.author
-										.userId
-								}
-								src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${task.author.profilePictureUrl!}`}
-								alt={
-									task
-										.author
-										.username
-								}
-								width={30}
-								height={30}
-								className='h-8 w-8 rounded-full border-2 border-white object-cover dark:border-dark-secondary'
-							/>
-						)}
+						{task.assignee &&
+							(task.assignee
+								.profilePictureUrl ? (
+								<Image
+									key={
+										task
+											.assignee
+											.userId
+									}
+									src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${task.assignee.profilePictureUrl}`}
+									alt={
+										task
+											.assignee
+											.username
+									}
+									width={
+										30
+									}
+									height={
+										30
+									}
+									className='h-8 w-8 rounded-full border-2 border-white object-cover dark:border-dark-secondary'
+								/>
+							) : (
+								<div
+									key={
+										task
+											.assignee
+											.userId
+									}
+									className='flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-gray-200 dark:border-dark-secondary dark:bg-dark-tertiary'>
+									<CiUser
+										size={
+											20
+										}
+										className='text-gray-500'
+									/>
+								</div>
+							))}
+
+						{task.author &&
+							(task.author
+								.profilePictureUrl ? (
+								<Image
+									key={
+										task
+											.author
+											.userId
+									}
+									src={`https://pm-s3-images.s3.us-east-2.amazonaws.com/${task.author.profilePictureUrl}`}
+									alt={
+										task
+											.author
+											.username
+									}
+									width={
+										30
+									}
+									height={
+										30
+									}
+									className='h-8 w-8 rounded-full border-2 border-white object-cover dark:border-dark-secondary'
+								/>
+							) : (
+								<div
+									key={
+										task
+											.author
+											.userId
+									}
+									className='flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-gray-200 dark:border-dark-secondary dark:bg-dark-tertiary'>
+									<CiUser
+										size={
+											20
+										}
+										className='text-gray-500'
+									/>
+								</div>
+							))}
 					</div>
 					<div className='flex items-center text-gray-500 dark:text-neutral-500'>
 						<MessageSquareMore size={20} />

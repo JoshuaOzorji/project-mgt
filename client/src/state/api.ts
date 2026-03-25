@@ -1,6 +1,13 @@
 // placeholder API slice for RTK Query
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+interface ApiResponse<T> {
+	success: boolean;
+	data: T;
+}
+
+const unwrap = <T>(response: ApiResponse<T>): T => response.data;
+
 export interface Project {
 	id: number;
 	name: string;
@@ -82,6 +89,8 @@ export const api = createApi({
 	endpoints: (build) => ({
 		getProjects: build.query<Project[], void>({
 			query: () => "projects",
+			transformResponse: (response: ApiResponse<Project[]>) =>
+				unwrap(response),
 			providesTags: ["Projects"],
 		}),
 
@@ -97,6 +106,8 @@ export const api = createApi({
 		getTasks: build.query<Task[], { projectId: number }>({
 			query: ({ projectId }) =>
 				`tasks?projectId=${projectId}`,
+			transformResponse: (response: ApiResponse<Task[]>) =>
+				unwrap(response),
 			providesTags: (result) =>
 				result
 					? result.map(({ id }) => ({
@@ -108,13 +119,20 @@ export const api = createApi({
 
 		getTasksByUser: build.query<Task[], number>({
 			query: (userId) => `tasks/user/${userId}`,
+			transformResponse: (response: ApiResponse<Task[]>) =>
+				unwrap(response),
 			providesTags: (result, error, userId) =>
 				result
 					? result.map(({ id }) => ({
-							type: "Tasks",
+							type: "Tasks" as const,
 							id,
 						}))
-					: [{ type: "Tasks", id: userId }],
+					: [
+							{
+								type: "Tasks" as const,
+								id: userId,
+							},
+						],
 		}),
 
 		createTask: build.mutation<Task, Partial<Task>>({
@@ -137,21 +155,28 @@ export const api = createApi({
 				body: { status },
 			}),
 			invalidatesTags: (result, error, { taskId }) => [
-				{ type: "TASKS", id: taskId },
+				{ type: "Tasks", id: taskId },
 			],
 		}),
 
 		getUsers: build.query<User[], void>({
 			query: () => "users",
+			transformResponse: (response: ApiResponse<User[]>) =>
+				unwrap(response),
 			providesTags: ["Users"],
 		}),
 
 		getTeams: build.query<Team[], void>({
 			query: () => "teams",
+			transformResponse: (response: ApiResponse<Team[]>) =>
+				unwrap(response),
 			providesTags: ["Teams"],
 		}),
 		search: build.query<SearchResults, string>({
 			query: (query) => `search?q=${query}`,
+			transformResponse: (
+				response: ApiResponse<SearchResults>,
+			) => unwrap(response),
 		}),
 	}),
 });
@@ -165,4 +190,5 @@ export const {
 	useSearchQuery,
 	useGetUsersQuery,
 	useGetTeamsQuery,
+	useGetTasksByUserQuery,
 } = api;

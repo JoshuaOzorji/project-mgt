@@ -83,9 +83,11 @@ export const search = async (req: Request, res: Response): Promise<void> => {
 
 		res.status(StatusCodes.OK).json({
 			success: true,
-			tasks,
-			projects,
-			users,
+			data: {
+				tasks,
+				projects,
+				users,
+			},
 		});
 	} catch (error) {
 		handleError(res, error);
